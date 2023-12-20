@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First_NodeJs_Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            width: 85%;
+            margin: auto;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .body {
+            width: 88%;
+            margin: auto;
+            margin-top: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        p {
+            text-align: center;
+        }
+        #btn {
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .buyBtn{
+            padding: 5px;
+            border-radius: 5px;
+        }
+        input {
+            padding: 2px;
+            width: 200px;
+        }
+
+        li {
+            list-style: none;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <!-- <h2>first_project_test_using_REST_apis</h2> -->
+        <header>
+            <div>
+                <p><b>Item Name</b></p>
+                <input type="text" id="item_name">
+            </div>
+            <div>
+                <p><b>Description</b></p>
+                <input type="text" id="description">
+            </div>
+            <div>
+                <p><b>Price</b></p>
+                <input type="text" id="price">
+            </div>
+            <div>
+                <p><b>Quantity</b></p>
+                <input type="text" id="quantity">
+            </div>
+            <div>
+                <input type="submit" value="Add Item" id="btn">
+            </div>
+        </header>
+    </div>
+    <div class="body">
+        <ul id="lists">
+            <!-- <li>name  quantity description button</li> -->
+        </ul>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+
+        var item_name = document.getElementById('item_name');
+        var description = document.getElementById('description');
+        var price = document.getElementById('price');
+        var quantity = document.getElementById('quantity');
+
+        const btn = document.getElementById("btn");
+        const ul = document.getElementById('lists');
+
+
+        btn.addEventListener('click', () => {
+            const obj = {
+                item_name: item_name.value,
+                description: description.value,
+                price: price.value,
+                quantity: quantity.value
+            }
+
+            axios.post('http://localhost:3000/addItem', obj)
+                .then(Response => showDataOnScreen(Response.data.newItemDetail))
+                .catch(err => console.error(err));
+
+            item_name.value = '';
+            description.value = '';
+            price.value = '';
+            quantity.value = '';
+        });
+
+        function showDataOnScreen(item) {
+            const li = `<li id="${item.id}">  ${item.item_name} - ${item.description} - ${item.price} - ${item.quantity} - <button onclick="buyOne(${item.id})" class='buyBtn'> Buy One </button> <button onclick="buyTwo(${item.id})" class='buyBtn'> Buy Two </button> <button onclick="buyThree(${item.id})" class='buyBtn'> Buy Three </button> </li>`;
+            ul.innerHTML = ul.innerHTML + li;
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get('http://localhost:3000/getAll-Items')
+                .then(response => {
+                    for (var i = 0; i < response.data.allItems.length; i++) {
+                        showDataOnScreen(response.data.allItems[i]);
+                    }
+                    console.log(response.data.allItems.length);
+                })
+                .catch(err => console.error(err));
+        })
+
+        function buyOne(id) {
+            axios.put(`http://localhost:3000/buyOne/${id}`)
+                .then(res => {
+                    ul.innerHTML = ``;
+                    return axios.get('http://localhost:3000/getAll-Items')
+                })
+                .then(response => {
+                    for (var i = 0; i < response.data.allItems.length; i++) {
+                        showDataOnScreen(response.data.allItems[i]);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+        function buyTwo(id) {
+            axios.put(`http://localhost:3000/buyTwo/${id}`)
+                .then(res => {
+                    ul.innerHTML = ``;
+                    return axios.get('http://localhost:3000/getAll-Items')
+                })
+                .then(response => {
+                    for (var i = 0; i < response.data.allItems.length; i++) {
+                        showDataOnScreen(response.data.allItems[i]);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+        function buyThree(id) {
+            axios.put(`http://localhost:3000/buyThree/${id}`)
+                .then(res => {
+                    ul.innerHTML = ``;
+                    return axios.get('http://localhost:3000/getAll-Items')
+                })
+                .then(response => {
+                    for (var i = 0; i < response.data.allItems.length; i++) {
+                        showDataOnScreen(response.data.allItems[i]);
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
+    </script>
+
+
+</body>
